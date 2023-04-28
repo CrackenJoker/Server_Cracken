@@ -1,0 +1,173 @@
+#! /bin/bash
+
+ajuda(){
+
+	echo "Nome:"
+	echo "    Server_cracken é uma ferramenta de gerenciamento de serviços e servidores"
+	echo ""
+	echo "Version:1.0"
+	echo "Manageded somewhere server: server_cracken [-options] name server"
+	echo "Options:"
+	echo "	 -O,open 		open graphic interface of xamp"
+	echo "	 -h,help 		open instrucions manual"
+	echo "	 -SA 			started all default server xamp"
+	echo "	 -SO 			stoped all default server xamp"
+	echo "	 -SN			select an service specific"
+	echo "The servers for default are:"
+	echo "	  -m            mysql"
+	echo "	  -a            apache"
+	echo "	  -f            ftp"
+	echo "example:"
+	echo "     server_cracken -h"
+	echo "     server_cracken help"
+	echo "     server_cracken -O"
+	echo "     server_cracken -SA"
+	echo "     server_cracken -SN -m start"
+	echo -e "Lean more in: \033[31;4mhttps://github.com/crackenJoker/server_cracken"
+	echo ""
+
+}
+
+abrir(){
+	cd /
+	cd opt/lampp/
+	./manager-linux-x64.run &>/dev/null
+    [[ $? -eq 0 ]] && echo "" || echo "Run it as root!" && exit 1
+}
+
+if [ "$1" == "" ]
+then
+	ajuda
+elif [ "$1" == "help" ]
+then
+	ajuda
+elif [ "$1" == "-h" ]
+then
+	ajuda
+elif [ "$1" == "open" ]
+then
+	abrir
+elif [ "$1" == "-O" ]
+then
+	abrir
+elif [ "$1" == "-SA" ]
+then
+	echo "Starting server"
+	#inciando mysql
+	cd /
+	cd opt/lampp/mysql/scripts
+	./ctl.sh start &>/dev/null 
+	sleep 1
+
+	#iniciando apache
+	cd ..
+	cd ..
+	cd apache2/scripts/
+	./ctl.sh start &>/dev/null
+	sleep 1
+	#iniciando ftp
+	cd ..
+	cd ..
+	cd proftpd/scripts/
+	./ctl.sh start &>/dev/null	
+	sleep 2
+	echo "Server Started."
+	echo ""
+	echo "Ports"
+	netstat -nlpt | grep "tcp6" 
+
+elif [ "$1" == "-SO" ]
+then
+	echo "Stoping server"
+	cd /
+	cd opt/lampp/mysql/scripts
+	./ctl.sh stop &>/dev/null 
+	sleep 1
+	cd ..
+	cd ..
+	cd apache2/scripts/
+	./ctl.sh stop &>/dev/null
+	cd ..
+	cd ..
+	cd proftpd/scripts/
+	./ctl.sh stop &>/dev/null
+	sleep 2
+	echo "Server Stoped."
+	echo ""
+	echo ""
+	netstat -nlpt | grep "tcp6"
+
+elif [ "$1" == "-sA" ]
+then
+	case $2 in 
+		-m) echo "Mysql"
+			case $3 in
+				start) echo "Starting mysql"
+						cd /
+						cd opt/lampp/mysql/scripts
+						./ctl.sh $3 &>/dev/null
+						echo "mysql started"
+				;;
+				stop) echo "Stoping mysql"
+					  cd /
+					  cd opt/lampp/mysql/scripts
+					  ./ctl.sh $3 &>/dev/null
+					  echo "mysql stoped"
+				;;
+				status) echo "Status mysql"
+				        cd /
+						cd opt/lampp/mysql/scripts
+						./ctl.sh $3
+				;;
+				*) echo "Comando não encontrado";;
+			esac
+		;;
+		-a) echo "Apache"
+			case $3 in
+				start) echo "Starting apache"
+						cd /
+						cd opt/lampp/mysql/scripts
+						./ctl.sh $3 &>/dev/null
+						echo "apache started"
+				;;
+				stop) echo "Stoping apache"
+					  cd /
+					  cd opt/lampp/mysql/scripts
+					  ./ctl.sh $3 &>/dev/null
+					  echo "apache stoped"
+				;;
+				status) echo "Status apache"
+				        cd /
+						cd opt/lampp/mysql/scripts
+						./ctl.sh $3
+				;;
+				*) echo "Comando não encontrado";;
+			esac;;
+
+		-f) echo "Ftp"
+			case $3 in
+				start) echo "Starting ftp"
+						cd /
+						cd opt/lampp/mysql/scripts
+						./ctl.sh $3 &>/dev/null
+						echo "ftp started"
+				;;
+				stop) echo "Stoping ftp"
+					  cd /
+					  cd opt/lampp/mysql/scripts
+					  ./ctl.sh $3 &>/dev/null
+					  echo "ftp stoped"
+				;;
+				status) echo "Status ftp"
+				        cd /
+						cd opt/lampp/mysql/scripts
+						./ctl.sh $3
+				;;
+				*) echo "Comando não encontrado";;
+			esac;;
+		*) echo "Servidor $2 não foi encontrado";;
+		esac
+else
+	echo "Comando não encontrado"
+fi
+
